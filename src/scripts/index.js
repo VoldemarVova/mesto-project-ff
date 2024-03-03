@@ -1,5 +1,6 @@
 import { initialCards } from './cards';
 import { createCard, cardDelete, handelLike} from "../components/card";
+import { openModal, closeModal } from "../components/modal";
 
 
 // @todo: Темплейт карточки
@@ -27,7 +28,6 @@ const newCard = document.querySelector('.popup_type_new-card');
 // const cardOpenImage = document.querySelector('.places__list');
 const openImage = document.querySelector('.popup_type_image');
 const popupClose = document.querySelectorAll('.popup__close')
-const popups = document.querySelectorAll('.popup')
 
 //Плавное открытие и закрытие попапов
 profileEdit.classList.add('popup_is-animated');
@@ -36,11 +36,11 @@ newCard.classList.add('popup_is-animated')
 
 //Открытие и закрытие модального окна
 buttonProfileEdit.addEventListener('click', function () {
-  profileEdit.classList.add('popup_is-opened');
+  openModal(profileEdit);
 });
 
 buttonNewCard.addEventListener('click', function () {
-  newCard.classList.add('popup_is-opened')
+  openModal(newCard)
 })
 
 // cardOpenImage.addEventListener('click', function (evt){
@@ -52,26 +52,11 @@ buttonNewCard.addEventListener('click', function () {
 
 popupClose.forEach(popupClose => {
   popupClose.addEventListener('click', function () {
-    profileEdit.classList.remove('popup_is-opened');
-    newCard.classList.remove('popup_is-opened');
-    openImage.classList.remove('popup_is-opened');
+    closeModal(profileEdit)
+    closeModal(newCard)
+    closeModal(openImage)
   });
 });
-
-//Закрытие попапа кликом на оверлей и esc
-popups.forEach(popup => {
-  popup.addEventListener('click', event => {
-    if (event.target === popup) {
-      popup.classList.remove('popup_is-opened');
-    }
-  });
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') {
-      popup.classList.remove('popup_is-opened');
-    }
-  });
-});
-
 
 //Редактирование имени и информации о себе
 const formElement = document.querySelector('.popup__form[name="edit-profile"]');
@@ -81,7 +66,6 @@ const nameInput = document.querySelector('.popup__input_type_name');
 const descriptionInput = document.querySelector('.popup__input_type_description');
 
 buttonProfileEdit.addEventListener('click', function () {
-  profileEdit.classList.add('popup_is-opened');
   nameInput.value = profileTitle.textContent;
   descriptionInput.value = profileDescription.textContent;
 });
@@ -90,7 +74,7 @@ function handleFormSubmit(evt) {
   evt.preventDefault();
   profileTitle.textContent = nameInput.value
   profileDescription.textContent = descriptionInput.value;
-  profileEdit.classList.remove('popup_is-opened');
+  closeModal(profileEdit);
   // console.log(handleFormSubmit)
 }
 
@@ -106,11 +90,10 @@ function handleAddCardSubmit(evt) {
   const cardElement = createCard(cardTemplate, {name: placeInput.value, link: linkInput.value}, cardDelete);
   cardList.prepend(cardElement);
   addCardForm.reset();
-  newCard.classList.remove('popup_is-opened');
+  closeModal(newCard)
 }
 
 addCardForm.addEventListener('submit', handleAddCardSubmit)
-
 
 //Открытие попапа с картинкой
 const popupImage = document.querySelector('.popup__image');
@@ -120,7 +103,7 @@ function openFullImage(evt) {
   popupImage.src = evt.target.src;
   popupImage.alt = evt.target.alt;
   popupCaption.textContent = evt.target.alt;
-  openImage.classList.add('popup_is-opened');
+  openModal(openImage);
 }
 
 cardList.addEventListener('click', function(evt) {
