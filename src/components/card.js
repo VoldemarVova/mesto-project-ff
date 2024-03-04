@@ -1,7 +1,11 @@
 // @todo: Функция создания карточки
-function createCard(template, data, onRemoveClick) {
+function createCard(template, data, handlers = {}) {
+  const { onLikeClick, onRemoveClick, onImageClick } = handlers;
+
   const cardElement = template.querySelector('.card').cloneNode(true);
   const deleteButton = cardElement.querySelector('.card__delete-button');
+  const likeButton = cardElement.querySelector('.card__like-button');
+  const imageElement = cardElement.querySelector('.card__image');
 
   const { link, name } = data;
 
@@ -9,25 +13,28 @@ function createCard(template, data, onRemoveClick) {
   cardElement.querySelector('.card__image').alt = name;
   cardElement.querySelector('.card__title').textContent = name;
 
-  deleteButton.addEventListener('click', () => onRemoveClick(cardElement));
+  if (likeButton && onLikeClick) {
+    likeButton.addEventListener('click', (event) => onLikeClick(event, { cardElement, data }));
+  }
+
+  if (deleteButton && onRemoveClick) {
+    deleteButton.addEventListener('click', (event) => onRemoveClick(event, { cardElement, data }));
+  }
+
+  if (imageElement && onImageClick) {
+    imageElement.addEventListener('click', (event) => onImageClick(event, { cardElement, data }));
+  }
 
   return cardElement;
 }
 
-// @todo: Функция удаления карточки
-function cardDelete(card) {
-  card.remove();
+function cardRemove(event, context) {
+  const { cardElement } = context;
+  cardElement.remove();
 }
 
-//Лайк карточки
-const cardList = document.querySelector('.places__list');
-function handelLike(evt) {
-  if (evt.target.classList.contains('card__like-button')) {
-    evt.target.classList.toggle('card__like-button_is-active');
-  }
+function cardLike(event) {
+  event.currentTarget.classList.toggle('card__like-button_is-active');
 }
 
-cardList.addEventListener('click', handelLike);
-
-
-export {createCard, cardDelete, handelLike}
+export { createCard, cardRemove, cardLike };
