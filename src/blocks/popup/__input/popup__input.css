@@ -10,6 +10,10 @@
   margin-bottom: 10px;
 }
 
+.popup__input:focus-visible {
+  outline: 0;
+}
+
 .popup__input:last-of-type {
   margin-bottom: 0;
 }

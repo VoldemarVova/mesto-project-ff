@@ -1,6 +1,7 @@
 import { initialCards } from './cards';
 import { createCard, cardRemove, cardLike } from "../components/card";
 import { openModal, closeModal } from "../components/modal";
+import { enableValidation } from "../components/validate";
 
 
 // @todo: Темплейт карточки
@@ -43,7 +44,8 @@ buttonProfileEdit.addEventListener('click', function () {
 });
 
 buttonNewCard.addEventListener('click', function () {
-  openModal(newCard)
+  addCardForm.reset();
+  openModal(newCard);
 })
 
 popupsClose.forEach((popupClose) => {
@@ -108,3 +110,12 @@ function openFullImage(event) {
   popupCaption.textContent = event.target.alt;
   openModal(openImage);
 }
+
+enableValidation({
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+});

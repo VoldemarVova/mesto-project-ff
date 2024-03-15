@@ -1,5 +1,6 @@
-//Закрытие попапа кликом на оверлей и esc
+import { clearValidation, toggleButtonState } from "./validate";
 
+//Закрытие попапа кликом на оверлей и esc
 function closePopupByOverlay(event) {
   if (event.target === event.currentTarget) {
     closeModal(event.currentTarget)
@@ -17,6 +18,9 @@ function closePopupByEsc(event) {
 }
 
 function openModal (element) {
+  const formElement = element.querySelector('.popup__form');
+  clearValidation(formElement);
+  toggleButtonState(formElement);
   element.classList.add('popup_is-opened')
   element.addEventListener('click', closePopupByOverlay);
   document.addEventListener('keydown', closePopupByEsc);

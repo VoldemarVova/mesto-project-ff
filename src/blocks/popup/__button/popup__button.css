@@ -25,3 +25,9 @@
     line-height: 17px;
   }
 }
+
+.popup__button[disabled] {
+  color: #C4C4C4;
+  background: #FFF;
+  border: solid 1px #C4C4C4;
+}
