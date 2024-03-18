@@ -1,28 +1,15 @@
 import { initialCards } from './cards';
-import { createCard, cardRemove, cardLike } from "../components/card";
+import {createCard, cardRemove, cardLike,} from "../components/card";
 import { openModal, closeModal } from "../components/modal";
 import { enableValidation } from "../components/validate";
 
+import { patchProfileInfo, postAddCard, getInitialData, deleteCard, likeCard, dislikeCard } from './api';
 
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
 
 // @todo: DOM узлы
 const cardList = document.querySelector('.places__list');
-
-// @todo: Вывести карточки на страницу
-initialCards.forEach((item) => {
-  const card = createCard(
-    cardTemplate,
-    item,
-    {
-      onLikeClick: cardLike,
-      onRemoveClick: cardRemove,
-      onImageClick: openFullImage,
-    }
-  );
-  cardList.append(card);
-});
 
 const buttonProfileEdit = document.querySelector('.profile__edit-button');
 const profileEdit = document.querySelector('.popup_type_edit');
@@ -65,11 +52,17 @@ const profileDescription = document.querySelector('.profile__description');
 const nameInput = document.querySelector('.popup__input_type_name');
 const descriptionInput = document.querySelector('.popup__input_type_description');
 
+
 function handleSubmitEditProfile(event) {
   event.preventDefault();
   profileTitle.textContent = nameInput.value
   profileDescription.textContent = descriptionInput.value;
-  closeModal(profileEdit);
+  patchProfileInfo(nameInput.value, descriptionInput.value)
+    .then((profileInfo) => {
+      nameInput.value = profileInfo.name;
+      descriptionInput.value = profileInfo.about;
+      closeModal(profileEdit);
+    })
 }
 
 formEditProfile.addEventListener('submit', handleSubmitEditProfile);
@@ -79,23 +72,64 @@ const addCardForm = document.querySelector('.popup__form[name="new-place"]');
 const placeInput = document.querySelector('.popup__input_type_card-name');
 const linkInput = document.querySelector('.popup__input_type_url');
 
+/**
+ * @param event {MouseEvent<HTMLButtonElement>}
+ * @param context {{
+ *   cardElement: HTMLDivElement,
+ *   data: { _id: string },
+ * }}
+ */
+const handleCardRemove = (event, context) => {
+  deleteCard(context.data._id).then(() => {
+    cardRemove(event, context);
+  });
+}
+
+/**
+ * @param event {MouseEvent<HTMLButtonElement>}
+ * @param context {{
+ *   cardElement: HTMLDivElement,
+ *   data: { _id: string, likes: { _id: string }[] },
+ * }}
+ */
+const handleCardLike = (event, context) => {
+  const { cardElement, data } = context;
+  const likeButton = cardElement.querySelector('.card__like-button');
+
+  if (likeButton.classList.contains("card__like-button_is-active")) {
+    dislikeCard(data._id)
+    .then((updatedData) => {
+      likeButton.textContent = updatedData.likes.length;
+      likeButton.classList.toggle('card__like-button_is-active');
+    })
+  }
+  else {
+    likeCard(data._id)
+      .then((updatedData) => {
+        likeButton.textContent = updatedData.likes.length;
+        likeButton.classList.toggle('card__like-button_is-active');
+      })
+  }
+}
+
 function handleAddCardSubmit(event) {
   event.preventDefault();
-  const cardElement = createCard(
-    cardTemplate,
-    {
-      name: placeInput.value,
-      link: linkInput.value,
-    },
-    {
-      onLikeClick: cardLike,
-      onRemoveClick: cardRemove,
-      onImageClick: openFullImage,
-    }
-  );
-  cardList.prepend(cardElement);
-  addCardForm.reset();
-  closeModal(newCard)
+  postAddCard(placeInput.value, linkInput.value)
+    .then((data) => {
+      const cardElement = createCard(
+        cardTemplate,
+        data,
+        {
+          onLikeClick: handleCardLike,
+          onRemoveClick: handleCardRemove,
+          onImageClick: openFullImage,
+          hasRemoveButton: true,
+        }
+      );
+      cardList.prepend(cardElement);
+      addCardForm.reset();
+      closeModal(newCard)
+    })
 }
 
 addCardForm.addEventListener('submit', handleAddCardSubmit)
@@ -111,11 +145,31 @@ function openFullImage(event) {
   openModal(openImage);
 }
 
-enableValidation({
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inactiveButtonClass: 'popup__button_disabled',
-  inputErrorClass: 'popup__input_type_error',
-  errorClass: 'popup__error_visible'
+document.addEventListener('DOMContentLoaded', () => {
+  enableValidation({
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+  });
+  getInitialData().then(({ profileInfo, cardsInfo }) => {
+    profileTitle.textContent = profileInfo.name;
+    profileDescription.textContent = profileInfo.about;
+    cardsInfo.forEach((item) => {
+      const card = createCard(
+        cardTemplate,
+        item,
+        {
+          onLikeClick: handleCardLike,
+          onRemoveClick: handleCardRemove,
+          onImageClick: openFullImage,
+          hasRemoveButton: profileInfo._id === item.owner._id,
+          hasLike: item.likes.some((like) => like._id === profileInfo._id),
+        }
+      );
+      cardList.append(card);
+    });
+  });
 });

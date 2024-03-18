@@ -70,15 +70,12 @@ const setEventListeners = (formElement) => {
  * @param {HTMLFormElement} formElement
  */
 function clearValidation(formElement) {
-  console.log('`.${validation.config.errorClass}`', `.${validation.config.errorClass}`)
   const errorMessageElements = Array.from(formElement.querySelectorAll(`.${validation.config.errorClass}`));
-  console.log('errorMessageElements', errorMessageElements);
   errorMessageElements.forEach((element) => {
     element.textContent = '';
     element.classList.remove(validation.config.errorClass);
   });
   const inputElements = Array.from(formElement.querySelectorAll(`.${validation.config.inputErrorClass}`));
-  console.log('inputElements', inputElements);
   inputElements.forEach((element) => {
     element.classList.remove(validation.config.inputErrorClass);
   });
@@ -104,10 +101,5 @@ const enableValidation = (validationConfig) => {
     setEventListeners(formElement);
   });
 };
-
-// const formInput = formElement.querySelector('.popup__input');
-// formInput.addEventListener('input', function (event) {
-//   console.log(event.target.validity.valid);
-// });
 
 export { clearValidation, toggleButtonState, enableValidation}
