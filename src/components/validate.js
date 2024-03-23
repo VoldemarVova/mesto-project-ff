@@ -46,9 +46,11 @@ const isValid = (formElement, formInput) => {
  * @param {HTMLFormElement} formElement
  */
 const toggleButtonState = (formElement) => {
+  if (!formElement) return;
   const hasInvalid = Boolean(formElement.querySelector(`.${validation.config.inputErrorClass}`));
   const submitButton = formElement.querySelector(validation.config.submitButtonSelector);
-  submitButton.disabled = hasInvalid;
+  const isEmptyInput = Array.from(formElement.querySelectorAll('input')).some(input => !input.value.trim());
+  submitButton.disabled = hasInvalid || isEmptyInput;
 }
 
 /**
@@ -70,6 +72,7 @@ const setEventListeners = (formElement) => {
  * @param {HTMLFormElement} formElement
  */
 function clearValidation(formElement) {
+  if (!formElement) return;
   const errorMessageElements = Array.from(formElement.querySelectorAll(`.${validation.config.errorClass}`));
   errorMessageElements.forEach((element) => {
     element.textContent = '';
@@ -102,4 +105,4 @@ const enableValidation = (validationConfig) => {
   });
 };
 
-export { clearValidation, toggleButtonState, enableValidation}
+export { clearValidation, toggleButtonState, enableValidation }

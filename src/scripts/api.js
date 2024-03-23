@@ -15,7 +15,7 @@ const renderResult = (res) => {
   if (res.ok) {
     return res.json();
   }
-  return Promise.reject(res.status);
+  return Promise.reject(`Ошибка: ${res.status}`);
 }
 
 /**
@@ -23,7 +23,7 @@ const renderResult = (res) => {
  * @param err
  */
 const renderError = (err) => {
-  console.error('Ошибка:', err);
+  console.log(err);
 }
 
 /**
@@ -61,6 +61,23 @@ const patchProfileInfo = (name, about) => {
   })
     .then(renderResult)
     .catch(renderError)
+}
+
+/**
+ * Обновление аватарки
+ * @param avatar
+ * @return {Promise<T | void>}
+ */
+const patchAvatar = (avatar) => {
+  return fetch(`${configApi.url}/users/me/avatar`, {
+    method: "PATCH",
+    headers: configApi.headers,
+    body: JSON.stringify({
+      avatar,
+    }),
+  })
+    .then(renderResult)
+    .catch(renderError);
 }
 
 /**
@@ -184,4 +201,5 @@ export {
   deleteCard,
   likeCard,
   dislikeCard,
+  patchAvatar,
 }
