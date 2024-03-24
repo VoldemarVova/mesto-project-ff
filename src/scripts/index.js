@@ -48,21 +48,21 @@ avatarEdit.classList.add('popup_is-animated')
 //Открытие и закрытие модального окна
 buttonAvatar.addEventListener('click', function () {
   avatarLinkInput.value = '';
-  clearValidation(avatarEdit)
+  clearValidation(avatarEdit);
   openModal(avatarEdit);
 });
 
 buttonProfileEdit.addEventListener('click', function () {
   typeNameInput.value = profileTitle.textContent;
   descriptionInput.value = profileDescription.textContent;
-  clearValidation(profileEdit)
+  clearValidation(profileEdit);
   openModal(profileEdit);
 });
 
 buttonNewCard.addEventListener('click', function () {
   nameInput.value = '';
   linkInput.value = '';
-  clearValidation(newCard)
+  clearValidation(newCard);
   openModal(newCard);
 })
 
@@ -87,8 +87,8 @@ function handleSubmitEditProfile(event) {
   saveButton.textContent = 'Сохранение...';
   patchProfileInfo(typeNameInput.value, descriptionInput.value)
     .then((profileInfo) => {
-      profileTitle.textContent = typeNameInput.value
-      profileDescription.textContent = descriptionInput.value;
+      profileTitle.textContent = profileInfo.name;
+      profileDescription.textContent = profileInfo.about;
       closeModal(profileEdit);
     })
     .catch((error) => {
@@ -121,8 +121,11 @@ function handleAvatarSubmit(event) {
     });
 }
 
-//Открытие попапа с картинкой
-function openFullImage(event) {
+/**
+ * Открытие попапа с картинкой
+ * @param event
+ */
+function handleOpenFullImage(event) {
   popupImage.src = event.target.src;
   popupImage.alt = event.target.alt;
   popupCaption.textContent = event.target.alt;
@@ -148,7 +151,7 @@ function handleAddCardSubmit(event) {
         {
           onLikeClick: handleCardLike,
           onRemoveClick: handleCardRemove,
-          onImageClick: openFullImage,
+          onImageClick: handleOpenFullImage,
           hasRemoveButton: true,
         }
       );
@@ -191,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
           {
             onLikeClick: handleCardLike,
             onRemoveClick: handleCardRemove,
-            onImageClick: openFullImage,
+            onImageClick: handleOpenFullImage,
             hasRemoveButton: profileInfo._id === item.owner._id,
             hasLike: item.likes.some((like) => like._id === profileInfo._id),
           });

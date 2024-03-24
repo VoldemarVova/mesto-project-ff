@@ -69,11 +69,14 @@ const setEventListeners = (formElement) => {
  * @param {HTMLFormElement} formElement
  */
 function clearValidation(formElement) {
-  if (!formElement) return;
+  if (!formElement){
+    return;
+  }
   const inputElements = Array.from(formElement.querySelectorAll(`.${validation.config.inputErrorClass}`));
   inputElements.forEach((element) => {
     hideInputError(formElement, element);
   });
+  toggleButtonState(formElement);
 }
 
 /**
