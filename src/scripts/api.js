@@ -7,7 +7,6 @@ const configApi  = {
 }
 
 /**
- * Проверка на корректность
  * @param res
  * @return {Promise<never>|*}
  */
@@ -15,15 +14,7 @@ const renderResult = (res) => {
   if (res.ok) {
     return res.json();
   }
-  return Promise.reject(`Ошибка: ${res.status}`);
-}
-
-/**
- * Вывод ошибки в консоль
- * @param err
- */
-const renderError = (err) => {
-  console.log(err);
+  return Promise.reject(new Error(`Ошибка: ${res.status}`));
 }
 
 /**
@@ -41,14 +32,12 @@ const getProfileInfo = () => {
     headers: configApi.headers,
   })
     .then(renderResult)
-    .catch(renderError);
 }
 
 /**
- * Обновление информации о пользователе
  * @param name
  * @param about
- * @return {Promise<T | void>}
+ * @return {Promise<Response>}
  */
 const patchProfileInfo = (name, about) => {
   return fetch(`${configApi.url}/users/me`, {
@@ -58,9 +47,7 @@ const patchProfileInfo = (name, about) => {
       name,
       about,
     }),
-  })
-    .then(renderResult)
-    .catch(renderError)
+  }).then(renderResult)
 }
 
 /**
@@ -77,7 +64,6 @@ const patchAvatar = (avatar) => {
     }),
   })
     .then(renderResult)
-    .catch(renderError);
 }
 
 /**
@@ -96,7 +82,6 @@ const postAddCard = (name, link) => {
     }),
   })
     .then(renderResult)
-    .catch(renderError)
 }
 
 /**
@@ -114,7 +99,6 @@ const getCards = () => {
     headers: configApi.headers,
   })
     .then(renderResult)
-    .catch(renderError);
 }
 
 /**
@@ -128,7 +112,6 @@ const deleteCard = (cardId) => {
     headers: configApi.headers,
   })
     .then(renderResult)
-    .catch(renderError);
 }
 
 /**
@@ -142,7 +125,6 @@ const likeCard = (cardId) => {
     headers: configApi.headers,
   })
     .then(renderResult)
-    .catch(renderError);
 }
 
 /**
@@ -156,7 +138,6 @@ const dislikeCard = (cardId) => {
     headers: configApi.headers,
   })
     .then(renderResult)
-    .catch(renderError);
 }
 
 

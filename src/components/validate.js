@@ -13,8 +13,6 @@ const validation = {
   config: {},
 }
 
-const formElement = document.querySelector('.popup__form');
-
 const showInputError = (formElement, formInput, errorMessage) => {
   const formError = formElement.querySelector(`.${formInput.id}-error`);
   formInput.classList.add(validation.config.inputErrorClass);
@@ -58,7 +56,6 @@ const toggleButtonState = (formElement) => {
  */
 const setEventListeners = (formElement) => {
   const inputList = Array.from(formElement.querySelectorAll(validation.config.inputSelector));
-  const buttonElement = formElement.querySelector(validation.config.submitButtonSelector);
   toggleButtonState(formElement);
   inputList.forEach((formInput) => {
     formInput.addEventListener('input', function () {
@@ -73,14 +70,9 @@ const setEventListeners = (formElement) => {
  */
 function clearValidation(formElement) {
   if (!formElement) return;
-  const errorMessageElements = Array.from(formElement.querySelectorAll(`.${validation.config.errorClass}`));
-  errorMessageElements.forEach((element) => {
-    element.textContent = '';
-    element.classList.remove(validation.config.errorClass);
-  });
   const inputElements = Array.from(formElement.querySelectorAll(`.${validation.config.inputErrorClass}`));
   inputElements.forEach((element) => {
-    element.classList.remove(validation.config.inputErrorClass);
+    hideInputError(formElement, element);
   });
 }
 

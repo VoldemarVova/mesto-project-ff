@@ -1,3 +1,5 @@
+import {deleteCard, dislikeCard, likeCard} from "../scripts/api";
+
 /**
  * Создания карточки
  * @param template HTMLTemplateElement
@@ -26,8 +28,8 @@ function createCard(template, data, options = {}) {
   const imageElement = cardElement.querySelector('.card__image');
 
   const { link, name, likes } = data;
-  cardElement.querySelector('.card__image').src = link;
-  cardElement.querySelector('.card__image').alt = name;
+  imageElement.src = link;
+  imageElement.alt = name;
   cardElement.querySelector('.card__title').textContent = name;
   likeButton.textContent = likes.length;
 
@@ -56,13 +58,55 @@ function createCard(template, data, options = {}) {
  * @param event
  * @param context
  */
-function cardRemove(event, context) {
+function removeCard(event, context) {
   const { cardElement } = context;
   cardElement.remove();
 }
 
-function cardLike(event) {
-  event.currentTarget.classList.toggle('card__like-button_is-active');
+/**
+ * @param event {MouseEvent<HTMLButtonElement>}
+ * @param context {{
+ *   cardElement: HTMLDivElement,
+ *   data: { _id: string, likes: { _id: string }[] },
+ * }}
+ */
+const handleCardLike = (event, context) => {
+  const { cardElement, data } = context;
+  const likeButton = cardElement.querySelector('.card__like-button');
+
+  if (likeButton.classList.contains("card__like-button_is-active")) {
+    dislikeCard(data._id)
+      .then((updatedData) => {
+        likeButton.textContent = updatedData.likes.length;
+        likeButton.classList.toggle('card__like-button_is-active');
+      })
+      .catch((error) => {
+        console.log(error.message);
+      })
+  }
+  else {
+    likeCard(data._id)
+      .then((updatedData) => {
+        likeButton.textContent = updatedData.likes.length;
+        likeButton.classList.toggle('card__like-button_is-active');
+      })
+      .catch((error) => {
+        console.log(error.message);
+      })
+  }
 }
 
-export { createCard, cardRemove, cardLike };
+/**
+ * @param event {MouseEvent<HTMLButtonElement>}
+ * @param context {{
+ *   cardElement: HTMLDivElement,
+ *   data: { _id: string },
+ * }}
+ */
+const handleCardRemove = (event, context) => {
+  deleteCard(context.data._id).then(() => {
+    removeCard(event, context);
+  });
+}
+
+export { createCard, removeCard, handleCardLike, handleCardRemove };
