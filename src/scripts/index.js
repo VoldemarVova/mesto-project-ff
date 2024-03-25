@@ -47,7 +47,7 @@ avatarEdit.classList.add('popup_is-animated')
 
 //Открытие и закрытие модального окна
 buttonAvatar.addEventListener('click', function () {
-  avatarLinkInput.value = '';
+  avatarForm.reset();
   clearValidation(avatarEdit);
   openModal(avatarEdit);
 });
@@ -60,8 +60,7 @@ buttonProfileEdit.addEventListener('click', function () {
 });
 
 buttonNewCard.addEventListener('click', function () {
-  nameInput.value = '';
-  linkInput.value = '';
+  formNewPlace.reset();
   clearValidation(newCard);
   openModal(newCard);
 })

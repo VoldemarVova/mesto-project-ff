@@ -104,9 +104,13 @@ const handleCardLike = (event, context) => {
  * }}
  */
 const handleCardRemove = (event, context) => {
-  deleteCard(context.data._id).then(() => {
+  deleteCard(context.data._id)
+    .then(() => {
     removeCard(event, context);
-  });
+  })
+    .catch((error) => {
+    console.log(error.message);
+  })
 }
 
 export { createCard, removeCard, handleCardLike, handleCardRemove };
