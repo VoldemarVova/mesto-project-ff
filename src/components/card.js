@@ -1,4 +1,4 @@
-import {deleteCard, dislikeCard, likeCard} from "../scripts/api";
+import { deleteCard, dislikeCard, likeCard } from "../scripts/api";
 
 /**
  * Создания карточки

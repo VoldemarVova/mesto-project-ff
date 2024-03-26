@@ -26,6 +26,8 @@ const popupCaption = document.querySelector('.popup__caption');
 const formEditProfile = document.forms['edit-profile'];
 const avatarForm = document.forms['avatar'];
 const avatarLinkInput = avatarForm.querySelector("#new-place-avatar");
+const confirmationPopup = document.querySelector('.popup_type_delete_card');
+
 /**
  * @type HTMLFormElement
  */
@@ -44,8 +46,8 @@ profileEdit.classList.add('popup_is-animated');
 openImage.classList.add('popup_is-animated')
 newCard.classList.add('popup_is-animated')
 avatarEdit.classList.add('popup_is-animated')
+confirmationPopup.classList.add('popup_is-animated')
 
-//Открытие и закрытие модального окна
 buttonAvatar.addEventListener('click', function () {
   avatarForm.reset();
   clearValidation(avatarEdit);
@@ -121,6 +123,23 @@ function handleAvatarSubmit(event) {
 }
 
 /**
+ * @param event MouseEvent<HTMLButtonElement>
+ * @param context {{ cardElement: HTMLDivElement, data: { _id: string } }}
+ */
+function showRemoveCardConfirmation(event, context) {
+  if (!context.data._id) {
+    return;
+  }
+  openModal(confirmationPopup);
+  function handleSubmit() {
+    handleCardRemove(event, context);
+    closeModal(confirmationPopup);
+    confirmationPopup.removeEventListener('submit', handleSubmit);
+  }
+  confirmationPopup.addEventListener('submit', handleSubmit);
+}
+
+/**
  * Открытие попапа с картинкой
  * @param event
  */
@@ -149,7 +168,7 @@ function handleAddCardSubmit(event) {
         data,
         {
           onLikeClick: handleCardLike,
-          onRemoveClick: handleCardRemove,
+          onRemoveClick: showRemoveCardConfirmation,
           onImageClick: handleOpenFullImage,
           hasRemoveButton: true,
         }
@@ -192,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
           item,
           {
             onLikeClick: handleCardLike,
-            onRemoveClick: handleCardRemove,
+            onRemoveClick: showRemoveCardConfirmation,
             onImageClick: handleOpenFullImage,
             hasRemoveButton: profileInfo._id === item.owner._id,
             hasLike: item.likes.some((like) => like._id === profileInfo._id),
